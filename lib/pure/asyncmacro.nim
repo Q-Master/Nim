@@ -26,13 +26,19 @@ template createCb(retFutureSym, iteratorNameSym,
   proc identName {.closure.} =
     try:
       if not nameIterVar.finished:
+        # Break if pending future is already finished. Cancellation point
+        if retFutureSym.finished:
+          return
         var next = nameIterVar()
         # Continue while the yielded future is already finished.
         while (not next.isNil) and next.finished:
+          # Break if pending future is already finished. Cancellation point
+          if retFutureSym.finished:
+            return
           next = nameIterVar()
           if nameIterVar.finished:
             break
-
+        retFutureSym.recursiveFuture = next
         if next == nil:
           if not retFutureSym.finished:
             let msg = "Async procedure ($1) yielded `nil`, are you await'ing a " &

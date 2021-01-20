@@ -232,6 +232,9 @@
   zone offsets without colons, e.g. `UTC+7 -> +0700`.
 
 
+- Changed the behaviour of `future.complete` and `future.fail`. Now they are cancelling the
+  the future which they are called on in cancellation points and cancel all recursive running futures.
+  The callbacks connected to all those futures are triggered upon cancellation.
 
 ## Language changes
 
